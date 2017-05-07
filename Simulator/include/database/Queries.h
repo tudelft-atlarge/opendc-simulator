@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include "Query.h"
 
 namespace Database

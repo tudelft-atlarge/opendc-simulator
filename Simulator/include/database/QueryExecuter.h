@@ -32,22 +32,14 @@ namespace Database
 			Binds the given name-value pairs to the statement.
 			Recursive case.
 		*/
-		template<typename BindType>
-		QueryExecuter<ReturnTypes...>& bindParams(BindType locationValuePair, int depth = 1)
-		{
-			query->template bind<BindType>(locationValuePair, depth);
-			return *this;
-		}
-
-		/*
-			Binds the given name-value pairs to the statement.
-			Recursive case.
-		*/
 		template<typename BindType, typename ...BindTypes>
 		QueryExecuter<ReturnTypes...>& bindParams(BindType locationValuePair, BindTypes... locationValuePairs, int depth = 1)
 		{
+			/* Do not recurse on empty variadic */
+			if (sizeof...(locationValuePairs) != 0) {
+				bindParams<BindTypes...>(locationValuePairs..., depth + 1);
+			}
 			query->template bind<BindType>(locationValuePair, depth);
-			bindParams<BindTypes...>(locationValuePairs..., depth + 1);
 			return *this;
 		}
 
