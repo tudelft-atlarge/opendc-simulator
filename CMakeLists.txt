@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 project(opendc-simulator)
 
-
 # Build options
 option(WITH_DOCUMENTATION 
 	"Use Doxygen to create API documentation of this library." OFF)
@@ -10,10 +9,9 @@ option(WITH_DOCUMENTATION
 set(CMAKE_CXX_STANDARD 14)
 
 # sqlite3 dependency
-add_library(sqlite3 STATIC ../opendc-simulator-dependencies/sqlite/sqlite3.c)
-target_include_directories(sqlite3 PUBLIC ../opendc-simulator-dependencies/sqlite)
+add_library(sqlite3 STATIC opendc-simulator-dependencies/sqlite/sqlite3.c)
+target_include_directories(sqlite3 PUBLIC opendc-simulator-dependencies/sqlite)
 
-include_directories(include/)
 add_executable(simulator 
 	src/Simulator.cpp
 	src/database/Database.cpp
@@ -26,16 +24,27 @@ add_executable(simulator
 	src/modeling/Rack.cpp
 )
 target_compile_options(simulator PRIVATE -std=c++14)
+target_include_directories(simulator PUBLIC include/)
 target_link_libraries(simulator sqlite3)
 
+# Testing
+enable_testing()
+add_subdirectory(opendc-simulator-dependencies/googletest)
+add_executable(simulator-tests 
+	tests/src/main.cpp	
+)
+target_include_directories(simulator-tests PRIVATE include/ tests/include)
+target_link_libraries(simulator-tests gtest gtest_main)
+add_test(simulator-tests simulator-tests)
 
+# Documentation
 if(WITH_DOCUMENTATION)
-	FIND_PACKAGE(Doxygen)
+	find_package(Doxygen)
 	if (NOT DOXYGEN_FOUND)
 		message(FATAL_ERROR
 		"Doxygen is needed to build the documentation. Please install it correctly")
 	endif()
-	add_custom_target (docs ALL
+	add_custom_target(docs ALL
 		COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_SOURCE_DIR}/Doxyfile
 		SOURCES ${PROJECT_SOURCE_DIR}/Doxyfile
 		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
