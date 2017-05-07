@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 # sqlite3 dependency
 add_library(sqlite3 STATIC ../opendc-simulator-dependencies/sqlite/sqlite3.c)
-
+target_include_directories(sqlite3 PUBLIC ../opendc-simulator-dependencies/sqlite)
 
 include_directories(include/)
 add_executable(simulator 
@@ -25,8 +25,8 @@ add_executable(simulator
 	src/modeling/Entity.cpp
 	src/modeling/Rack.cpp
 )
-target_compile_options(simulator PRIVATE -std=libc++14)
-target_link_libraries(simulator sqlite3 "-Iinclude -lpthread -ldl")
+target_compile_options(simulator PRIVATE -std=c++14)
+target_link_libraries(simulator sqlite3)
 
 
 if(WITH_DOCUMENTATION)
