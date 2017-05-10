@@ -39,14 +39,14 @@ target_include_directories(simulator PUBLIC include/)
 target_link_libraries(simulator mariadb)
 
 # Testing
-enable_testing()
-add_subdirectory(opendc-simulator-dependencies/googletest)
-add_executable(simulator-tests 
-	tests/src/main.cpp	
-)
-target_include_directories(simulator-tests PRIVATE include/ tests/include)
-target_link_libraries(simulator-tests gtest gtest_main)
-add_test(simulator-tests simulator-tests)
+#enable_testing()
+#add_subdirectory(opendc-simulator-dependencies/googletest)
+#add_executable(simulator-tests 
+#	tests/src/main.cpp	
+#)
+#target_include_directories(simulator-tests PRIVATE include/ tests/include)
+#target_link_libraries(simulator-tests gtest gtest_main)
+#add_test(simulator-tests simulator-tests)
 
 # Documentation
 if(WITH_DOCUMENTATION)
