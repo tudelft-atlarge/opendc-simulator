@@ -1,16 +1,28 @@
 cmake_minimum_required(VERSION 3.1)
 project(opendc-simulator)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 # Build options
 option(WITH_DOCUMENTATION 
 	"Use Doxygen to create API documentation of this library." OFF)
 
+# Use system libraries
+option(USE_SYSTEM_LIBRARIES
+	"Use system libraries instead of the libraries bundled in this distribution." OFF)
+
 # Use C++14
 set(CMAKE_CXX_STANDARD 14)
 
-# sqlite3 dependency
-add_library(sqlite3 STATIC opendc-simulator-dependencies/sqlite/sqlite3.c)
-target_include_directories(sqlite3 PUBLIC opendc-simulator-dependencies/sqlite)
+# MariaDB dependency
+if (USE_SYSTEM_LIBRARIES)
+	find_package(MariaDB REQUIRED)
+	if (NOT MARIADB_FOUND)
+		message(FATAL_ERROR "The MariaDB connector library was not found on the system") 
+	endif()
+else()
+	#add_library(mariadb SHARED opendc-simulator-dependencies/sqlite/sqlite3.c)
+	#target_include_directories(mariadb PUBLIC opendc-simulator-dependencies/sqlite)
+endif()
 
 add_executable(simulator 
 	src/Simulator.cpp
@@ -23,9 +35,8 @@ add_executable(simulator
 	src/modeling/Entity.cpp
 	src/modeling/Rack.cpp
 )
-target_compile_options(simulator PRIVATE -std=c++14)
 target_include_directories(simulator PUBLIC include/)
-target_link_libraries(simulator sqlite3)
+target_link_libraries(simulator mariadb)
 
 # Testing
 enable_testing()
