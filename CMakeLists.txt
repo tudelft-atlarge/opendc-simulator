@@ -8,7 +8,7 @@ option(WITH_DOCUMENTATION
 
 # Use system libraries
 option(USE_SYSTEM_LIBRARIES
-	"Use system libraries instead of the libraries bundled in this distribution." OFF)
+	"Use system libraries instead of the libraries bundled in this distribution." ON)
 
 # Use C++14
 set(CMAKE_CXX_STANDARD 14)
@@ -20,6 +20,7 @@ if (USE_SYSTEM_LIBRARIES)
 		message(FATAL_ERROR "The MariaDB connector library was not found on the system") 
 	endif()
 else()
+	message(FATAL_ERROR "The project requires system libraries for now")
 	#add_library(mariadb SHARED opendc-simulator-dependencies/sqlite/sqlite3.c)
 	#target_include_directories(mariadb PUBLIC opendc-simulator-dependencies/sqlite)
 endif()
