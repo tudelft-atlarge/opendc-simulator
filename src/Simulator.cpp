@@ -8,10 +8,8 @@
 
 int main(int argc, char* argv[])
 {
-	assert(argc == 2);
-
 	// The main simulator, responsible for updating and writing away each simulation.
-	Simulation::Simulator simulator(argv[1]);
+	Simulation::Simulator simulator("127.0.0.1", "opendc", "opendcpassword", "opendc", 3306);
 
 	// Timer used for polling only once every 5 seconds
 	auto pollTimer = std::chrono::high_resolution_clock::now() - std::chrono::seconds(5);

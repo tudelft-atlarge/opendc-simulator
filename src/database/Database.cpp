@@ -7,33 +7,41 @@
 
 #include "simulation/schedulers/ShortestRemainingTimeScheduler.h"
 
-#include <sqlite3.h>
+#include <stdio.h>
+#include <mysql.h>
 #include <assert.h>
 #include "simulation/Experiment.h"
 #include "simulation/schedulers/FirstInFirstOutScheduler.h"
 
 namespace Database
 {
-	Database::Database(char* name)
+	Database::Database(const char *host,
+				const char *user,
+				const char *passwd,
+				const char *name,
+				unsigned int port)
 	{
-		int rc = sqlite3_open_v2(name, &db, SQLITE_OPEN_READWRITE, NULL);
-		assert(rc == SQLITE_OK);
+		db = mysql_init(db);
+		if (!mysql_real_connect(db, host, user, passwd, name, port, "/var/tmp/mysql.sock", 0)) {
+			fprintf(stderr, "error (%d): %s [%s]\n",
+					mysql_errno(db), mysql_error(db), mysql_sqlstate(db));
+			abort();
+		}
 	}
 
 	Database::~Database()
 	{
-		int rc = sqlite3_close_v2(db);
-		assert(rc == SQLITE_OK);
+		mysql_close(db);
 	}
 
 	void Database::startTransaction() const
 	{
-		sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+		mysql_query(db, "BEGIN TRANSACTION;");
 	}
 
 	void Database::endTransaction() const
 	{
-		sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, NULL);
+		mysql_query(db, "END TRANSACTION;");
 	}
 
 	void Database::writeExperimentHistory(Simulation::Experiment& experiment) const
@@ -61,7 +69,7 @@ namespace Database
 		QueryExecuter<> writeMachineStateQuery(db);
 		writeMachineStateQuery.setQuery(Queries::WRITE_MACHINE_STATE);
 
-		std::for_each(machineHistory.get().begin(), machineHistory.get().end(), [&](const auto& pair) {
+		std::for_each(machineHistory.get().begin(), machineHistory.get().end(), [&](const auto & pair) {
 			uint32_t tick = pair.first;
 			Simulation::MachineSnapshot snapshot = pair.second;
 
@@ -71,6 +79,13 @@ namespace Database
 			float load = snapshot.loadFraction;
 
 			uint32_t mem = snapshot.usedMemory;
+
+			// Determine whether the workoad is valid (zero is not)
+			// TODO: determine why it is possible that this value is zero
+			// This check should probably not be needed
+			if (workloadId == 0)
+				return;
+
 			writeMachineStateQuery.reset()
 				.bindParams<int, int, int, int, float, int, float>(workloadId, id, experiment.getId(), tick, temp, mem, load)
 				.executeOnce();

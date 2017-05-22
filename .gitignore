@@ -16,7 +16,11 @@ Testing/x64
 Testing/Debug
 Testing/LastCoverageResults.log
 
+build
 *.o
 Simulator/simulator
 *.user
 Simulator/external/
+
+# swap files
+.*.sw*

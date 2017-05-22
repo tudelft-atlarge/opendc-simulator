@@ -2,7 +2,7 @@
 #include "simulation/Section.h"
 #include "modeling/ModelingTypes.h"
 
-#include <sqlite3.h>
+#include <mysql.h>
 #include "simulation/Experiment.h"
 
 namespace Database
@@ -14,9 +14,14 @@ namespace Database
 	{
 	public:
 		/*
-			Initializes a database with the given name. If it does not yet exist is creates a $name.db file.
+			Initializes a database connection to the database located at the
+			given address using the given username and password..
 		*/
-		explicit Database(char* name);
+		explicit Database(const char *host,
+				const char *user,
+				const char *passwd,
+				const char *db,
+				unsigned int port);
 		
 		/*
 			Closes the database connection.
@@ -72,7 +77,7 @@ namespace Database
 		*/
 		Simulation::WorkloadPool loadWorkloads(uint32_t traceId) const;
 
-		// The sqlite db connection.
-		sqlite3 *db;
+		// The MariaDB db connection.
+		MYSQL *db;
 	};
 }

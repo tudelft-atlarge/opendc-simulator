@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include "Query.h"
 
 namespace Database
@@ -10,27 +11,27 @@ namespace Database
 		)query"));
 
 		Query<> SET_EXPERIMENT_STATE_SIMULATING(std::string(R"query(
-			UPDATE experiments SET state='SIMULATING' WHERE id=$id;		
+			UPDATE experiments SET state='SIMULATING' WHERE id=?;
 		)query"));
 
 		Query<> SET_EXPERIMENT_STATE_FINISHED(std::string(R"query(
-			UPDATE experiments SET state='FINISHED' WHERE id=$id;		
+			UPDATE experiments SET state='FINISHED' WHERE id=?;
 		)query"));
 
 		Query<int, int, int, int, std::string, std::string> GET_EXPERIMENT_BY_ID(std::string(R"query(
-			SELECT id, simulation_id, path_id, trace_id, scheduler_name, name FROM experiments WHERE id = $id;
+			SELECT id, simulation_id, path_id, trace_id, scheduler_name, name FROM experiments WHERE id = ?;
 		)query"));
 
 		Query<int, int, std::string, std::string> GET_PATH_BY_ID(std::string(R"query(
-			SELECT id, simulation_id, name, datetime_created FROM paths WHERE id = $id;
+			SELECT id, simulation_id, name, datetime_created FROM paths WHERE id = ?;
 		)query"));
 
 		Query<int, int, int, int> GET_SECTION_BY_PATH_ID(std::string(R"query(
-			SELECT id, path_id, datacenter_id, start_tick FROM sections WHERE path_id = $id;
+			SELECT id, path_id, datacenter_id, start_tick FROM sections WHERE path_id = ?;
 		)query"));
 
 		Query<> WRITE_EXPERIMENT_LAST_SIMULATED_TICK(std::string(R"query(
-			UPDATE experiments SET last_simulated_tick = $val WHERE id = $id;
+			UPDATE experiments SET last_simulated_tick = ? WHERE id = ?;
 		)query"));
 		
 		/*
@@ -39,7 +40,7 @@ namespace Database
 			Binds: <int : id>
 		*/
 		Query<std::string> GET_SCHEDULER_TYPE_OF_EXPERIMENT(std::string(R"query(
-			SELECT scheduler_name FROM experiments WHERE id = $id;
+			SELECT scheduler_name FROM experiments WHERE id = ?;
 		)query"));
 
 		/*
@@ -48,7 +49,7 @@ namespace Database
 			Binds: <int : id>
 		*/
 		Query<int> GET_TRACE_OF_EXPERIMENT(std::string(R"query(
-			SELECT trace_id FROM experiments WHERE id = $id;
+			SELECT trace_id FROM experiments WHERE id = ?;
 		)query"));
 
 		/*
@@ -57,7 +58,7 @@ namespace Database
 			Binds: <int : datacenter_id>
 		*/
 		Query<int, std::string, int, std::string> GET_ROOMS_OF_DATACENTER(std::string(R"query(
-			SELECT * FROM rooms WHERE datacenter_id = $id;
+			SELECT * FROM rooms WHERE datacenter_id = ?;
 		)query"));
 
 		/*
@@ -69,7 +70,7 @@ namespace Database
 			SELECT racks.* FROM tiles, objects, racks
 			WHERE objects.id = tiles.object_id
 			AND objects.id = racks.id
-			AND tiles.room_id = $id;
+			AND tiles.room_id = ?;
 		)query"));
 
 		/*
@@ -79,7 +80,7 @@ namespace Database
 		*/
 		Query<int, int> GET_MACHINES_OF_RACK(std::string(R"query(
 			SELECT id, position FROM machines
-			WHERE rack_id = $rid;
+			WHERE rack_id = ?;
 		)query"));
 
 		/*
@@ -88,7 +89,7 @@ namespace Database
 			Binds: <int : trace_id>
 		*/
 		Query<int, int, int, int, int, std::string> GET_TASKS_OF_TRACE(std::string(R"query(
-			SELECT * FROM tasks WHERE trace_id = $id;
+			SELECT * FROM tasks WHERE trace_id = ?;
 		)query"));
 
 		/*
@@ -100,7 +101,7 @@ namespace Database
 			SELECT machines.position AS slot, cpus.clock_rate_mhz AS machine_speed, cpus.number_of_cores AS cores, cpus.energy_consumption_w AS energy_consumption, cpus.failure_model_id AS failure_model_id FROM cpus, machine_cpus, machines
 			WHERE machine_cpus.cpu_id = cpus.id
 			AND machine_cpus.machine_id = machines.id
-			AND machines.rack_id = $id;	
+			AND machines.rack_id = ?;
 		)query"));
 
 		/*
@@ -112,7 +113,7 @@ namespace Database
 			SELECT machines.position AS slot, gpus.clock_rate_mhz AS speed, gpus.number_of_cores AS cores,	gpus.energy_consumption_w AS energy_consumption, gpus.failure_model_id AS failure_model_id FROM gpus, machine_gpus, machines
 			WHERE machine_gpus.gpu_id = gpus.id
 			AND machine_gpus.machine_id = machines.id
-			AND machines.rack_id = $id;	
+			AND machines.rack_id = ?;
 		)query"));
 
 		/*
@@ -122,7 +123,7 @@ namespace Database
 		*/
 		Query<> WRITE_WORKLOAD_STATE(std::string(R"query(
 			INSERT INTO task_states (task_id, experiment_id, tick, flops_left, cores_used)
-			VALUES ($tid, $ssid, $tick, $flops, $cores_used);
+			VALUES (?, ?, ?, ?, ?);
 		)query"));
 	
 		/*
@@ -132,7 +133,7 @@ namespace Database
 		*/
 		Query<> WRITE_MACHINE_STATE(std::string(R"query(
 			INSERT INTO machine_states (task_id, machine_id, experiment_id, tick, temperature_c, in_use_memory_mb, load_fraction)
-			VALUES ($tid, $mid, $ssid, $tick, $temp, $mem, $load);
+			VALUES (?, ?, ?, ?, ?, ?, ?);
 		)query"));
 	}
 }

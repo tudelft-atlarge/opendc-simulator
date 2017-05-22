@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <map>
+#include <unordered_map>
 
 namespace Simulation {
 	template<typename Type>
