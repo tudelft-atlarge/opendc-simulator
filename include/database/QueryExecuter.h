@@ -3,7 +3,7 @@
 #include "QueryResult.h"
 
 #include <tuple>
-#include <sqlite3.h>
+#include <mysql.h>
 #include <memory>
 #include <vector>
 
@@ -16,7 +16,7 @@ namespace Database
 		/*
 			Creates a prepared statement and initializes the query.
 		*/
-		explicit QueryExecuter(sqlite3* db) : database(db) {}
+		explicit QueryExecuter(MYSQL *db) : database(db) {}
 
 		/*
 			Sets the query this executer will execute.
@@ -33,7 +33,7 @@ namespace Database
 			Recursive case.
 		*/
 		template<typename BindType, typename ...BindTypes>
-		QueryExecuter<ReturnTypes...>& bindParams(BindType locationValuePair, BindTypes... locationValuePairs, int depth = 1)
+		QueryExecuter<ReturnTypes...>& bindParams(BindType locationValuePair, BindTypes... locationValuePairs, int depth = 0)
 		{
 			/* Do not recurse on empty variadic */
 			if (sizeof...(locationValuePairs) != 0) {
@@ -141,7 +141,7 @@ namespace Database
 		}
 
 		std::unique_ptr<Query<ReturnTypes...>> query;
-		sqlite3* database;
+		MYSQL *database;
 	};
 }
 

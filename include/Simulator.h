@@ -16,7 +16,11 @@ namespace Simulation
 		/*
 			Initializes the simulator with an empty list of experiments, and with a reference to the database.
 		*/
-		explicit Simulator(char* databaseName) : database(databaseName) {}
+		explicit Simulator(const char *host,
+				const char *user,
+				const char *passwd,
+				const char *db,
+				unsigned int port) : database(host, user, passwd, db, port) {}
 
 		/*
 			Adds a simulation to the list of experiments from the database, removing it from the queue
