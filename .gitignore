@@ -21,3 +21,6 @@ build
 Simulator/simulator
 *.user
 Simulator/external/
+
+# swap files
+.*.sw*
