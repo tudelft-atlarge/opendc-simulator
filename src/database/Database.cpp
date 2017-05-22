@@ -23,7 +23,7 @@ namespace Database
 	{
 		db = mysql_init(db);
 		if (!mysql_real_connect(db, host, user, passwd, name, port, "/var/tmp/mysql.sock", 0)) {
-			fprintf(stderr, "error (%d): %s [%s]\n", 
+			fprintf(stderr, "error (%d): %s [%s]\n",
 					mysql_errno(db), mysql_error(db), mysql_sqlstate(db));
 			abort();
 		}
@@ -69,7 +69,7 @@ namespace Database
 		QueryExecuter<> writeMachineStateQuery(db);
 		writeMachineStateQuery.setQuery(Queries::WRITE_MACHINE_STATE);
 
-		std::for_each(machineHistory.get().begin(), machineHistory.get().end(), [&](const auto& pair) {
+		std::for_each(machineHistory.get().begin(), machineHistory.get().end(), [&](const auto & pair) {
 			uint32_t tick = pair.first;
 			Simulation::MachineSnapshot snapshot = pair.second;
 
@@ -79,6 +79,13 @@ namespace Database
 			float load = snapshot.loadFraction;
 
 			uint32_t mem = snapshot.usedMemory;
+
+			// Determine whether the workoad is valid (zero is not)
+			// TODO: determine why it is possible that this value is zero
+			// This check should probably not be needed
+			if (workloadId == 0)
+				return;
+
 			writeMachineStateQuery.reset()
 				.bindParams<int, int, int, int, float, int, float>(workloadId, id, experiment.getId(), tick, temp, mem, load)
 				.executeOnce();
