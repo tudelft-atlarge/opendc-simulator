@@ -35,11 +35,13 @@ namespace Database
 		template<typename BindType, typename ...BindTypes>
 		QueryExecuter<ReturnTypes...>& bindParams(BindType locationValuePair, BindTypes... locationValuePairs, int depth = 0)
 		{
+			query->template bind<BindType>(locationValuePair, depth);
+
 			/* Do not recurse on empty variadic */
 			if (sizeof...(locationValuePairs) != 0) {
 				bindParams<BindTypes...>(locationValuePairs..., depth + 1);
 			}
-			query->template bind<BindType>(locationValuePair, depth);
+
 			return *this;
 		}
 
