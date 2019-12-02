@@ -26,21 +26,8 @@ package com.atlarge.opendc.model.odc.integration.jpa.converter
 
 import com.atlarge.opendc.model.odc.platform.scheduler.Scheduler
 import com.atlarge.opendc.model.odc.platform.scheduler.StageScheduler
-import com.atlarge.opendc.model.odc.platform.scheduler.stages.machine.BestFitMachineSelectionPolicy
-import com.atlarge.opendc.model.odc.platform.scheduler.stages.machine.CpopMachineSelectionPolicy
-import com.atlarge.opendc.model.odc.platform.scheduler.stages.machine.FirstFitMachineSelectionPolicy
-import com.atlarge.opendc.model.odc.platform.scheduler.stages.machine.FunctionalMachineDynamicFilteringPolicy
-import com.atlarge.opendc.model.odc.platform.scheduler.stages.machine.HeftMachineSelectionPolicy
-import com.atlarge.opendc.model.odc.platform.scheduler.stages.machine.RandomMachineSelectionPolicy
-import com.atlarge.opendc.model.odc.platform.scheduler.stages.machine.RrMachineSelectionPolicy
-import com.atlarge.opendc.model.odc.platform.scheduler.stages.machine.WorstFitMachineSelectionPolicy
-import com.atlarge.opendc.model.odc.platform.scheduler.stages.task.CpopSortingPolicy
-import com.atlarge.opendc.model.odc.platform.scheduler.stages.task.FifoSortingPolicy
-import com.atlarge.opendc.model.odc.platform.scheduler.stages.task.FunctionalTaskEligibilityFilteringPolicy
-import com.atlarge.opendc.model.odc.platform.scheduler.stages.task.HeftSortingPolicy
-import com.atlarge.opendc.model.odc.platform.scheduler.stages.task.PisaSortingPolicy
-import com.atlarge.opendc.model.odc.platform.scheduler.stages.task.RandomSortingPolicy
-import com.atlarge.opendc.model.odc.platform.scheduler.stages.task.SrtfSortingPolicy
+import com.atlarge.opendc.model.odc.platform.scheduler.stages.machine.*
+import com.atlarge.opendc.model.odc.platform.scheduler.stages.task.*
 import javax.persistence.AttributeConverter
 
 /**
@@ -82,6 +69,7 @@ class SchedulerConverter : AttributeConverter<Scheduler<*>, String> {
             "HEFT" -> HeftSortingPolicy()
             "PISA" -> PisaSortingPolicy()
             "CPOP" -> CpopSortingPolicy()
+            "FCP" -> FCPSortingPolicy()
             else -> return null
         }
 
@@ -93,6 +81,7 @@ class SchedulerConverter : AttributeConverter<Scheduler<*>, String> {
             "HEFT" -> HeftMachineSelectionPolicy()
             "ROUNDROBIN" -> RrMachineSelectionPolicy()
             "CPOP" -> CpopMachineSelectionPolicy()
+            "FCP" -> FCPMachineSelectionPolicy()
             else -> return null
         }
 

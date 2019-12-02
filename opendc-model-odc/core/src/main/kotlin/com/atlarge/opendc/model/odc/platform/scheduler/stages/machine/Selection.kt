@@ -34,6 +34,7 @@ import com.atlarge.opendc.simulator.context
 import java.util.NavigableMap
 import java.util.Random
 import java.util.TreeMap
+import javax.crypto.Mac
 import kotlin.math.abs
 
 /**
@@ -161,6 +162,35 @@ class RrMachineSelectionPolicy(private var current: Int = 0) : MachineSelectionP
                 val ids: NavigableMap<Int, Machine> = TreeMap(machines.associateBy { it.id })
                 current = ids.higherKey(current) ?: ids.firstKey()
                 return ids[current]
+            }
+        }
+}
+
+/**
+ * Fast Critical Path (FCP) Scheduling machine selection
+ *
+ * FCP considers two machines candidates, one which has sent the last message (last message received), and
+ * the other which has became idle earliest. The procedure then selects the one with the earliest start time.
+ */
+class FCPMachineSelectionPolicy: MachineSelectionPolicy {
+    override suspend fun select(machines: List<Machine>, task: Task): Machine? =
+        context<StageScheduler.State, OdcModel>().run {
+            model.run {
+                if (machines.isEmpty()) {
+                    return null
+                }
+
+                // Sort by the time they are done with tasks
+                // Times are managed by the scheduler, so no
+                // inconsistencies
+                val earliest = machines.sortedBy{it.state.endTime}[0]
+                val last = machines.sortedBy {it.state.startTime}[0]
+
+                if (earliest.state.endTime < last.state.startTime) {
+                    return earliest
+                }
+
+                return last
             }
         }
 }

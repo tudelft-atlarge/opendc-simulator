@@ -30,6 +30,7 @@ import com.atlarge.opendc.model.topology.destinations
 import com.atlarge.opendc.simulator.Context
 import com.atlarge.opendc.simulator.Process
 import mu.KotlinLogging
+import java.util.*
 
 /**
  * A Physical Machine (PM) inside a rack of a datacenter. It has a speed, and can be given a workload on which it will
@@ -66,7 +67,9 @@ open class Machine(val ethernetSpeed: Double = 0.0) : Process<Machine.State, Top
                      val memory: Int = 50,
                      val load: Double = 0.0,
                      val temperature: Double = 23.0,
-                     val available: Int)
+                     val available: Int,
+                     var startTime: Date = Date(),
+                     var endTime: Date = Date())
 
     /**
      * This message is sent when a task is accepted by the machine.

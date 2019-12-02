@@ -149,6 +149,7 @@ class StageScheduler(
             if (task.finished) {
                 val correspondingMachine = state.taskMachines[task]
                 if (correspondingMachine != null) {
+                    correspondingMachine.state.endTime = Date()
                     state.machineCores.merge(correspondingMachine, task.cores, Int::plus)
                     state.taskMachines.remove(task)
                 }
@@ -190,6 +191,7 @@ class StageScheduler(
                 state.queued.remove(it)
                 state.pending.add(it)
                 state.taskMachines[it] = machine
+                machine.state.startTime = Date()
                 state.machineCores.merge(machine, it.cores, Int::minus)
             }
         }

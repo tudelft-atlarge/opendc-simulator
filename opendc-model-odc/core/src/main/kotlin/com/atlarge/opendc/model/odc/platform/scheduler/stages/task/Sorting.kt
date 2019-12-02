@@ -182,3 +182,23 @@ class PisaSortingPolicy(val MaxWaitCount: Int = 100, private val waitCounts: Mut
         .sortedByDescending { (_, priority) -> priority }
         .map { (task, _) -> task }
 }
+
+
+/**
+ * Fast Critical Path (FCP) Algorithm scheduling
+ *
+ * The paper keeps track of 2 lists which are sorted and unsorted. For the sorted list, the paper uses
+ * a priority queue, however a small sorted list will be sufficient for this simulation.
+ */
+class FCPSortingPolicy : TaskSortingPolicy {
+    override suspend fun sort(tasks: List<Task>): List<Task> {
+        // subList returns a view of the list limited by indices
+        // Operations done on this sublist is reflected on parent list
+        // So, instead of keeping two separate lists, we just keep
+        // a sub section of tasks sorted
+        val len = if (tasks.size > 500) 500 else tasks.size
+
+        tasks.subList(0, len).sortedBy {it.priority}
+        return tasks
+    }
+}

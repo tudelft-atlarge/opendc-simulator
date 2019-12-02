@@ -81,7 +81,7 @@ class SC18PlatformRunner : CliktCommand() {
         "FIFO-BESTFIT", "FIFO-FIRSTFIT", "FIFO-WORSTFIT", "FIFO-ROUNDROBIN",
         "RANDOM-BESTFIT", "RANDOM-FIRSTFIT", "RANDOM-WORSTFIT", "RANDOM-ROUNDROBIN",
         "PISA-BESTFIT", "PISA-FIRSTFIT", "PISA-WORSTFIT", "PISA-ROUNDROBIN",
-        "HEFT", "CPOP"
+        "HEFT", "CPOP", "FCP"
     ))
 
     /**
